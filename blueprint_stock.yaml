@@ -1,0 +1,74 @@
+---
+blueprint:
+  name: AWTRIX Device Yahoo Finance Stock Market Change
+  description: >
+  Install Yahoo Finance using HACS and add the yahoofinance entry and symbols in the configuration.yaml
+
+  domain: automation
+  input:
+    awtrix:
+      name: AWTRIX Device
+      description: Select the AWTRIX device
+      selector:
+        device:
+          filter:
+            - integration: mqtt
+              manufacturer: Blueforcer
+              model: AWTRIX 3
+    app_name:
+      name: AWTRIX Applicaiton name
+      description: This is the app name listed in the MQTT topic - it should be unique
+      selector:
+        text:
+      default: fin
+
+    symbol_sensor:
+      name: Symbol sensor
+      description: The symbol sensor created by Yahoo Finance
+      selector:
+        entity:
+
+    icon:
+      name: Icon to display
+      description: Icon to be displayed on AWTRIX
+      selector:
+        text:
+
+mode: restart
+variables:
+  device_id: !input awtrix
+  app: !input app_name
+  awtrix:
+    "{{ iif( device_attr(device_id, 'name_by_user') != none, device_attr(device_id,
+    'name_by_user'), device_attr(device_id, 'name') ) }}"
+
+  symbol_sensor: !input symbol_sensor
+  icon: !input icon
+  payload: >-
+{
+"text": "{{ state_attr(symbol_sensor, 'friendly_name') }} {{ state_attr(symbol_sensor, 'regularMarketChangePercent') }} %",
+"duration": 10,
+"icon": "8622",
+"color": "{% set marketChange = state_attr(symbol_sensor, 'regularMarketChangePercent') | float(0) %}
+{% if marketChange < 0.0 -%}
+  #FF0000
+{%- elif marketChange > 0.0 -%}
+  #00FF00
+{%- else -%}
+  #000000
+{%- endif %}"
+}
+
+trigger:
+  - platform: time_pattern
+    minutes: /1
+
+condition: []
+action:
+  service: mqtt.publish
+  data:
+    qos: 0
+    retain: false
+    topic: "{{awtrix}}/custom/{{app}}"
+    payload: >
+      {{payload}}
