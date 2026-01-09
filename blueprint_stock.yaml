@@ -2,7 +2,7 @@
 blueprint:
   name: AWTRIX Device Yahoo Finance Stock Market Change
   description: >
-  Install Yahoo Finance using HACS and add the yahoofinance entry and symbols in the configuration.yaml
+    Install Yahoo Finance using HACS and add the yahoofinance entry and symbols in the configuration.yaml
 
   domain: automation
   input:
@@ -16,7 +16,7 @@ blueprint:
               manufacturer: Blueforcer
               model: AWTRIX 3
     app_name:
-      name: AWTRIX Applicaiton name
+      name: AWTRIX Application name
       description: This is the app name listed in the MQTT topic - it should be unique
       selector:
         text:
@@ -27,7 +27,7 @@ blueprint:
       description: The symbol sensor created by Yahoo Finance
       selector:
         entity:
-
+          domain: sensor
 mode: restart
 variables:
   device_id: !input awtrix
@@ -35,7 +35,6 @@ variables:
   awtrix:
     "{{ iif( device_attr(device_id, 'name_by_user') != none, device_attr(device_id,
     'name_by_user'), device_attr(device_id, 'name') ) }}"
-
   symbol_sensor: !input symbol_sensor
   payload: >-
     {
@@ -54,7 +53,7 @@ variables:
 
 trigger:
   - platform: time_pattern
-    minutes: /1
+    minutes: 1
 
 condition: []
 action:
