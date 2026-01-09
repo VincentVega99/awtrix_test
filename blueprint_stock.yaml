@@ -28,13 +28,6 @@ blueprint:
       selector:
         entity:
 
-    icon:
-      name: Icon to display
-      description: Icon to be displayed on AWTRIX
-      selector:
-        text:
-      default: 0
-
 mode: restart
 variables:
   device_id: !input awtrix
@@ -44,21 +37,20 @@ variables:
     'name_by_user'), device_attr(device_id, 'name') ) }}"
 
   symbol_sensor: !input symbol_sensor
-  icon: !input icon
   payload: >-
-{
-"text": "{{ state_attr(symbol_sensor, 'friendly_name') }} {{ state_attr(symbol_sensor, 'regularMarketChangePercent') }} %",
-"duration": 10,
-"icon": "8622",
-"color": "{% set marketChange = state_attr(symbol_sensor, 'regularMarketChangePercent') | float(0) %}
-{% if marketChange < 0.0 -%}
-  #FF0000
-{%- elif marketChange > 0.0 -%}
-  #00FF00
-{%- else -%}
-  #000000
-{%- endif %}"
-}
+    {
+        "text": "{{ state_attr(symbol_sensor, 'friendly_name') }} {{ state_attr(symbol_sensor, 'regularMarketChangePercent') }} %",
+        "duration": 10,
+        "icon": "8622",
+        "color": "{% set marketChange = state_attr(symbol_sensor, 'regularMarketChangePercent') | float(0) %}
+        {% if marketChange < 0.0 -%}
+          #FF0000
+        {%- elif marketChange > 0.0 -%}
+          #00FF00
+        {%- else -%}
+          #000000
+        {%- endif %}"
+    }
 
 trigger:
   - platform: time_pattern
