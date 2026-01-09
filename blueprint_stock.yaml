@@ -31,10 +31,10 @@ blueprint:
 mode: restart
 variables:
   device_id: !input awtrix
-  app: !input app_name
   awtrix:
     "{{ iif( device_attr(device_id, 'name_by_user') != none, device_attr(device_id,
     'name_by_user'), device_attr(device_id, 'name') ) }}"
+  app: !input app_name
   symbol_sensor: !input symbol_sensor
   payload: >-
     {
