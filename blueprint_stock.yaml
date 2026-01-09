@@ -33,6 +33,7 @@ blueprint:
       description: Icon to be displayed on AWTRIX
       selector:
         text:
+    default: "0"
 
 mode: restart
 variables:
