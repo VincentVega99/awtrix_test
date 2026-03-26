@@ -1,0 +1,32 @@
+# Templates
+- sensor:
+  # Waste today
+  - name: "Müll morgen"
+    unique_id: 9BA4D6F3-4096-406D-9BDD-7FBA769BE4EF
+    state: >
+      {%- set waste_type = "-" -%}
+      {%- set upcoming_col = state_attr('sensor.nachste_mullabholung', 'upcoming') | list -%}
+      {%- for colitem in upcoming_col %}
+        {%- set itemdate = as_datetime(colitem.date).date() -%}
+        {%- if (itemdate - now().date()).days >= 1 -%}{{ colitem.type }},{%- endif %}
+      {%- endfor %}
+    attributes:
+      awtrix_icon: "{% set ns = namespace(type='') %}
+            {% set upcoming_col = state_attr('sensor.nachste_mullabholung', 'upcoming') | list %}
+            {%- for colitem in upcoming_col %}
+            {%- set itemdate = as_datetime(colitem.date).date() -%}
+            {%- if (itemdate - now().date()).days == 1 -%}{% set ns.type = ns.type + colitem.type + ',' %}{%- endif %}
+            {%- endfor %}
+            {{ ns.type }}
+            {%- if 'B' in ns.type -%}55111{%- elif 'P,G' in ns.type -%}72404{%- elif 'RM' in ns.type -%}9399{%- elif 'S' in ns.type -%}44670{%- else -%}58{%- endif %}"
+      something_available: >
+            {%- set ns = namespace(found=false) -%}
+            {%- set upcoming_col = state_attr('sensor.nachste_mullabholung', 'upcoming') | list -%}
+            {%- for colitem in upcoming_col -%}
+              {%- set itemdate = as_datetime(colitem.date).date() -%}
+              {%- if (itemdate - now().date()).days == 1 -%}
+                {%- set ns.found = true -%}
+              {%- endif %}
+            {%- endfor %}
+            {{ ns.found }}
+
